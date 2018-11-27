@@ -9,11 +9,15 @@ rust:
 matrix:
   allow_failures:
     - rust: nightly
-
-before_script:
-  - rustup component add rustfmt-preview
+  include:
+    - rust: stable
+      before_script:
+        - rustup component add rustfmt-preview
+      script:
+        - cargo fmt --all -- --check
+        - cargo build --verbose
+        - cargo test --verbose
 
 script:
-  - cargo fmt --all -- --check
   - cargo build --verbose
   - cargo test --verbose
