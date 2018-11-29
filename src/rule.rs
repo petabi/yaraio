@@ -1,12 +1,24 @@
 lalrpop_mod!(yara);
 
+bitflags! {
+    // We use the same values as those defined in yara/types.h.
+    pub struct StringModifiers: u32 {
+        const NONE     = 0b000000000000;
+        const NOCASE   = 0b000000000100;
+        const ASCII    = 0b000000001000;
+        const WIDE     = 0b000000010000;
+        const FULLWORD = 0b000010000000;
+        const XOR      = 0b100000000000;
+    }
+}
+
 pub struct Rule {
     identifier: String,
     global: bool,
     private: bool,
     tags: Vec<String>,
     meta: Vec<(String, String)>,
-    strings: Vec<(String, String)>,
+    strings: Vec<(String, String, StringModifiers)>,
 }
 
 impl Rule {
@@ -15,7 +27,7 @@ impl Rule {
         modifiers: (bool, bool),
         tags: Vec<String>,
         meta: Vec<(String, String)>,
-        strings: Vec<(String, String)>,
+        strings: Vec<(String, String, StringModifiers)>,
     ) -> Rule {
         Rule {
             identifier: identifier.to_string(),
@@ -30,7 +42,7 @@ impl Rule {
 
 #[cfg(test)]
 mod tests {
-    use super::yara;
+    use super::{yara, StringModifiers};
 
     #[test]
     fn rule_meta() {
@@ -128,5 +140,25 @@ rule test : Hello World
             ).unwrap();
         assert_eq!(rule[0].tags[0].as_str(), "Hello");
         assert_eq!(rule[0].tags[1].as_str(), "World");
+    }
+
+    #[test]
+    fn string_modifiers() {
+        let rule = yara::RulesParser::new()
+            .parse(
+                r#"
+rule test
+{
+    strings:
+        $hello = "Hello" nocase wide
+    condition:
+        true
+}
+"#,
+            ).unwrap();
+        assert_eq!(
+            rule[0].strings[0].2,
+            StringModifiers::NOCASE | StringModifiers::WIDE
+        );
     }
 }

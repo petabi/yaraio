@@ -1,6 +1,6 @@
 grammar;
 
-use rule::Rule;
+use rule::{Rule, StringModifiers};
 
 pub Rules: Vec<Rule> = {
     => Vec::new(),
@@ -23,7 +23,7 @@ Meta: Vec<(String, String)> = {
     "meta" ":" <MetaDeclarations> => <>,
 }
 
-Strings: Vec<(String, String)> = {
+Strings: Vec<(String, String, StringModifiers)> = {
     => Vec::new(),
     "strings" ":" <StringDeclarations> => <>,
 }
@@ -72,7 +72,7 @@ MetaDeclaration: (String, String) = {
     <id:Identifier> "=" <text:TextString> => (id.to_string(), text),
 }
 
-StringDeclarations: Vec<(String, String)> = {
+StringDeclarations: Vec<(String, String, StringModifiers)> = {
     StringDeclaration => vec![<>],
     <decls:StringDeclarations> <s:StringDeclaration> => {
         let mut decls = decls;
@@ -81,8 +81,8 @@ StringDeclarations: Vec<(String, String)> = {
     }
 }
 
-StringDeclaration: (String, String) = {
-    <id:StringIdentifier> "=" <text:TextString> => (id.to_string(), text),
+StringDeclaration: (String, String, StringModifiers) = {
+    <id:StringIdentifier> "=" <text:TextString> <mods:StringModifiers> => (id.to_string(), text, mods),
 }
 
 BooleanExpression: String = Expression => <>;
@@ -93,6 +93,19 @@ Expression: String = {
 };
 
 StringIdentifier: &'input str = r#"\$[A-Za-z0-9_]*"# => <>;
+
+StringModifiers: StringModifiers = {
+    => StringModifiers::NONE,
+    <mods:StringModifiers> <m:StringModifier> => mods | m,
+}
+
+StringModifier: StringModifiers = {
+    "wide" => StringModifiers::WIDE,
+    "ascii" => StringModifiers::ASCII,
+    "nocase" => StringModifiers::NOCASE,
+    "fullword" => StringModifiers::FULLWORD,
+    "xor" => StringModifiers::XOR,
+}
 
 Identifier: &'input str = r"[A-Za-z_][A-Za-z0-9_]*" => <>;
 

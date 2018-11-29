@@ -5,6 +5,7 @@ authors = ["Min Kim <msk@dolbo.net>"]
 build = "build.rs"
 
 [dependencies]
+bitflags = "1"
 lalrpop-util = "0.16"
 regex = "1"
 
