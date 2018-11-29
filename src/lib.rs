@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate bitflags;
+#[macro_use]
 extern crate lalrpop_util;
 
 lalrpop_mod!(pub yara);
