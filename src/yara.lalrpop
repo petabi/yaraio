@@ -1,0 +1,23 @@
+grammar;
+
+pub Rules: Vec<String> = {
+    => Vec::new(),
+    <rules:Rules> <r:Rule> => {
+        let mut rules = rules;
+        rules.push(r);
+        rules
+    },
+};
+
+Rule: String = "rule" <Identifier> "{" Condition "}" => <>.to_string();
+
+Condition: String = "condition" ":" <BooleanExpression> => <>;
+
+BooleanExpression: String = Expression => <>;
+
+Expression: String = {
+    "true" => "true".to_string(),
+    "false" => "false".to_string(),
+};
+
+Identifier: &'input str = r"[A-Za-z_][A-Za-z0-9_]*" => <>;
