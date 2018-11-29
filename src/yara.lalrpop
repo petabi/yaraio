@@ -1,6 +1,8 @@
 grammar;
 
-pub Rules: Vec<String> = {
+use rule::Rule;
+
+pub Rules: Vec<Rule> = {
     => Vec::new(),
     <rules:Rules> <r:Rule> => {
         let mut rules = rules;
@@ -9,9 +11,79 @@ pub Rules: Vec<String> = {
     },
 };
 
-Rule: String = "rule" <Identifier> "{" Condition "}" => <>.to_string();
+Rule: Rule = {
+    <mods:RuleModifiers> "rule" <id:Identifier> <tags:Tags> "{" <meta:Meta> <strs:Strings> Condition "}" => {
+        let tags = tags.iter().map(|t| t.to_string()).collect();
+        Rule::new(id, mods, tags, meta, strs)
+    }
+}
+
+Meta: Vec<(String, String)> = {
+    => Vec::new(),
+    "meta" ":" <MetaDeclarations> => <>,
+}
+
+Strings: Vec<(String, String)> = {
+    => Vec::new(),
+    "strings" ":" <StringDeclarations> => <>,
+}
 
 Condition: String = "condition" ":" <BooleanExpression> => <>;
+
+RuleModifiers: (bool, bool) = {
+    => (false, false),
+    <mods:RuleModifiers> <m:RuleModifier> => {
+        let mut mods = mods;
+        mods.0 |= m.0;
+        mods.1 |= m.1;
+        mods
+    }
+}
+
+RuleModifier: (bool, bool) = {
+    "private" => (false, true),
+    "global" => (true, false),
+}
+
+Tags: Vec<&'input str> = {
+    => Vec::new(),
+    ":" <TagList> => <>,
+}
+
+TagList: Vec<&'input str> = {
+    Identifier => vec![<>],
+    <tags:TagList> <t:Identifier> => {
+        let mut tags = tags;
+        tags.push(t);
+        tags
+    },
+}
+
+MetaDeclarations: Vec<(String, String)> = {
+    MetaDeclaration => vec![<>],
+    <decls:MetaDeclarations> <d:MetaDeclaration> => {
+        let mut decls = decls;
+        decls.push(d);
+        decls
+    }
+}
+
+MetaDeclaration: (String, String) = {
+    <id:Identifier> "=" <text:TextString> => (id.to_string(), text),
+}
+
+StringDeclarations: Vec<(String, String)> = {
+    StringDeclaration => vec![<>],
+    <decls:StringDeclarations> <s:StringDeclaration> => {
+        let mut decls = decls;
+        decls.push(s);
+        decls
+    }
+}
+
+StringDeclaration: (String, String) = {
+    <id:StringIdentifier> "=" <text:TextString> => (id.to_string(), text),
+}
 
 BooleanExpression: String = Expression => <>;
 
@@ -20,4 +92,8 @@ Expression: String = {
     "false" => "false".to_string(),
 };
 
+StringIdentifier: &'input str = r#"\$[A-Za-z0-9_]*"# => <>;
+
 Identifier: &'input str = r"[A-Za-z_][A-Za-z0-9_]*" => <>;
+
+TextString: String = <s:r#""[^"]*""#> => s[1..s.len() - 1].to_string();

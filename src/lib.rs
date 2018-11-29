@@ -2,6 +2,8 @@
 extern crate lalrpop_util;
 
 lalrpop_mod!(pub yara);
+mod rule;
+mod string;
 
 #[cfg(test)]
 mod tests {
