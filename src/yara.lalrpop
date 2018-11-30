@@ -83,6 +83,7 @@ StringDeclarations: Vec<(String, String, StringModifiers)> = {
 
 StringDeclaration: (String, String, StringModifiers) = {
     <id:StringIdentifier> "=" <text:TextString> <mods:StringModifiers> => (id.to_string(), text, mods),
+    <id:StringIdentifier> "=" <regexp:Regexp> <mods:StringModifiers> => (id.to_string(), regexp, mods),
 }
 
 BooleanExpression: String = Expression => <>;
@@ -108,5 +109,7 @@ StringModifier: StringModifiers = {
 }
 
 Identifier: &'input str = r"[A-Za-z_][A-Za-z0-9_]*" => <>;
+
+Regexp: String = <r:r#"/([^/]|\\/)*/i?s?"#> => r.to_string();
 
 TextString: String = <s:r#""[^"]*""#> => s[1..s.len() - 1].to_string();
