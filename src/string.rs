@@ -6,10 +6,9 @@ mod tests {
 
     #[test]
     fn regexp() {
-        assert!(
-            yara::RulesParser::new()
-                .parse(
-                    r#"
+        assert!(yara::RulesParser::new()
+            .parse(
+                r#"
 rule test
 {
     strings:
@@ -18,16 +17,15 @@ rule test
         true
 }
 "#
-                ).is_ok()
-        );
+            )
+            .is_ok());
     }
 
     #[test]
     fn text_string() {
-        assert!(
-            yara::RulesParser::new()
-                .parse(
-                    r#"
+        assert!(yara::RulesParser::new()
+            .parse(
+                r#"
 rule test
 {
     strings:
@@ -36,7 +34,7 @@ rule test
         true
 }
 "#
-                ).is_ok()
-        );
+            )
+            .is_ok());
     }
 }

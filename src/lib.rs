@@ -18,11 +18,9 @@ mod tests {
 
     #[test]
     fn minimal_rule() {
-        assert!(
-            yara::RulesParser::new()
-                .parse("rule dummy { condition: true }")
-                .is_ok()
-        );
+        assert!(yara::RulesParser::new()
+            .parse("rule dummy { condition: true }")
+            .is_ok());
     }
 
     #[test]
@@ -34,7 +32,8 @@ rule r1 { condition: true }
 rule r2 { condition: false }
 rule r3 { condition: true }
 ",
-            ).unwrap();
+            )
+            .unwrap();
         assert_eq!(rules.len(), 3);
     }
 }

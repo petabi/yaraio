@@ -58,7 +58,8 @@ rule test
         true
 }
 "#,
-            ).unwrap();
+            )
+            .unwrap();
         assert_eq!(rule[0].meta[0].0.as_str(), "meta0");
         assert_eq!(rule[0].meta[0].1.as_str(), "Hello");
         assert_eq!(rule[0].meta[1].0.as_str(), "meta1");
@@ -94,7 +95,8 @@ global private rule test1
         true
 }
 "#,
-            ).unwrap();
+            )
+            .unwrap();
         assert!(!rule[0].global);
         assert!(!rule[0].private);
         assert!(rule[1].global);
@@ -119,7 +121,8 @@ rule test
         true
 }
 "#,
-            ).unwrap();
+            )
+            .unwrap();
         assert_eq!(rule[0].strings[0].0.as_str(), "$hello");
         assert_eq!(rule[0].strings[0].1.as_str(), "Hello");
         assert_eq!(rule[0].strings[1].0.as_str(), "$world");
@@ -137,7 +140,8 @@ rule test : Hello World
         true
 }
 "#,
-            ).unwrap();
+            )
+            .unwrap();
         assert_eq!(rule[0].tags[0].as_str(), "Hello");
         assert_eq!(rule[0].tags[1].as_str(), "World");
     }
@@ -155,7 +159,8 @@ rule test
         true
 }
 "#,
-            ).unwrap();
+            )
+            .unwrap();
         assert_eq!(
             rule[0].strings[0].2,
             StringModifiers::NOCASE | StringModifiers::WIDE
