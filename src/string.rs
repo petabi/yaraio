@@ -22,6 +22,23 @@ rule test
     }
 
     #[test]
+    fn hex_string() {
+        assert!(yara::RulesParser::new()
+            .parse(
+                r#"
+rule test
+{
+    strings:
+        $hello = { F4 23 [4-6] 62 B4 }
+    condition:
+        true
+}
+"#
+            )
+            .is_ok());
+    }
+
+    #[test]
     fn text_string() {
         assert!(yara::RulesParser::new()
             .parse(
