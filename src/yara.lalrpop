@@ -84,6 +84,7 @@ StringDeclarations: Vec<(String, String, StringModifiers)> = {
 StringDeclaration: (String, String, StringModifiers) = {
     <id:StringIdentifier> "=" <text:TextString> <mods:StringModifiers> => (id.to_string(), text, mods),
     <id:StringIdentifier> "=" <regexp:Regexp> <mods:StringModifiers> => (id.to_string(), regexp, mods),
+    <id:StringIdentifier> "=" <hex:HexString> => (id.to_string(), hex, StringModifiers::NONE),
 }
 
 BooleanExpression: String = Expression => <>;
@@ -111,5 +112,7 @@ StringModifier: StringModifiers = {
 Identifier: &'input str = r"[A-Za-z_][A-Za-z0-9_]*" => <>;
 
 Regexp: String = <r:r#"/([^/]|\\/)*/i?s?"#> => r.to_string();
+
+HexString: String = <s:r#"\{(([a-fA-F0-9]|[ \-|?\[\]()\n\r\t]|/\*[^*]*\*/)+|//.*)+\}"#> => s.to_string();
 
 TextString: String = <s:r#""[^"]*""#> => s[1..s.len() - 1].to_string();
